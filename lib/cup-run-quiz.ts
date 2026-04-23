@@ -2,6 +2,7 @@ export type AnswerImage = {
   src: string;
   alt: string;
   objectPosition?: string;
+  objectFit?: "cover" | "contain";
   diagonalFrameClassName?: string;
   diagonalImageClassName?: string;
 };

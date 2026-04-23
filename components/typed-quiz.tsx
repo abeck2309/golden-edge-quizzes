@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { cupRunQuizQuestions, type TypedQuizQuestion } from "@/lib/cup-run-quiz";
+import type { TypedQuizQuestion } from "@/lib/cup-run-quiz";
 
 export type AnswerResult = {
   question: TypedQuizQuestion;
@@ -57,8 +57,14 @@ function getGradeLine(score: number, total: number) {
 }
 
 export function TypedQuiz({
+  title,
+  description,
+  questions,
   onLastResultChange
 }: {
+  title: string;
+  description: string;
+  questions: TypedQuizQuestion[];
   onLastResultChange?: (result: AnswerResult | null) => void;
 }) {
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -66,10 +72,10 @@ export function TypedQuiz({
   const [results, setResults] = useState<AnswerResult[]>([]);
   const [lastResult, setLastResult] = useState<AnswerResult | null>(null);
 
-  const currentQuestion = cupRunQuizQuestions[questionIndex];
-  const isComplete = questionIndex >= cupRunQuizQuestions.length;
+  const currentQuestion = questions[questionIndex];
+  const isComplete = questionIndex >= questions.length;
   const score = useMemo(() => results.filter((result) => result.isCorrect).length, [results]);
-  const progress = Math.round((results.length / cupRunQuizQuestions.length) * 100);
+  const progress = Math.round((results.length / questions.length) * 100);
 
   function submitAnswer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,17 +111,14 @@ export function TypedQuiz({
         <div>
           <p className="eyebrow">Typed Answer Quiz</p>
           <h1 className="mt-3 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
-            Reliving the 2023 Stanley Cup Run
+            {title}
           </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-mist md:text-base">
-            No choices. Type the answer from memory and see how much of Vegas&apos; Cup run is still
-            living rent-free in your head.
-          </p>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-mist md:text-base">{description}</p>
         </div>
         <div className="rounded-xl border border-gold/25 bg-gold/10 px-4 py-3 text-left md:text-right">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-bright">Score</p>
           <p className="mt-1 font-[family-name:var(--font-heading)] text-2xl font-bold text-white">
-            {score}/{cupRunQuizQuestions.length}
+            {score}/{questions.length}
           </p>
         </div>
       </div>
@@ -129,10 +132,10 @@ export function TypedQuiz({
           <div className="rounded-2xl border border-line bg-white/[0.03] p-5 md:p-6">
             <p className="eyebrow">Final Result</p>
             <h2 className="mt-3 font-[family-name:var(--font-heading)] text-3xl font-bold text-white md:text-5xl">
-              {score}/{cupRunQuizQuestions.length}
+              {score}/{questions.length}
             </h2>
             <p className="mt-4 text-sm leading-7 text-mist md:text-base">
-              {getGradeLine(score, cupRunQuizQuestions.length)}
+              {getGradeLine(score, questions.length)}
             </p>
           </div>
 
@@ -178,7 +181,7 @@ export function TypedQuiz({
         <div className="grid gap-6 lg:grid-cols-[1fr_0.72fr]">
           <form onSubmit={submitAnswer} className="rounded-2xl border border-line bg-white/[0.03] p-5 md:p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-bright">
-              Question {questionIndex + 1} of {cupRunQuizQuestions.length}
+              Question {questionIndex + 1} of {questions.length}
             </p>
             <h2 className="mt-4 font-[family-name:var(--font-heading)] text-2xl font-bold leading-tight text-white md:text-4xl">
               {currentQuestion.prompt}

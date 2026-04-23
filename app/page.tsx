@@ -31,7 +31,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-10 md:mt-12">
+        <section className="mt-10 grid gap-6 md:mt-12">
           <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <div className="flex flex-wrap items-center gap-3">
@@ -51,6 +51,31 @@ export default function HomePage() {
 
             <Link
               href="/reliving-the-2023-stanley-cup-run"
+              className="inline-flex w-fit rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink hover:bg-gold-bright"
+            >
+              Start Quiz
+            </Link>
+          </article>
+
+          <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="eyebrow">Trivia</p>
+                <span className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                  20 questions
+                </span>
+              </div>
+              <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
+                The Inagural Season
+              </h2>
+              <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
+                A typed-answer quiz on the first goals, first home game, breakout players, playoff
+                run, and unforgettable details from Vegas&apos; first NHL season.
+              </p>
+            </div>
+
+            <Link
+              href="/the-inagural-season"
               className="inline-flex w-fit rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink hover:bg-gold-bright"
             >
               Start Quiz

@@ -5,9 +5,9 @@ import { useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TypedQuiz, type AnswerResult } from "@/components/typed-quiz";
-import type { AnswerImage } from "@/lib/cup-run-quiz";
+import type { AnswerImage, TypedQuizQuestion } from "@/lib/cup-run-quiz";
 
-function AnswerHeroGraphic({ result }: { result: AnswerResult | null }) {
+function AnswerHeroGraphic({ result, eyebrow }: { result: AnswerResult | null; eyebrow: string }) {
   const visibleImages = result?.question.answerImages?.slice(0, 2) ?? [];
   const label = result?.question.displayAnswer;
 
@@ -44,7 +44,7 @@ function AnswerHeroGraphic({ result }: { result: AnswerResult | null }) {
         <>
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,9,0.18),rgba(5,7,9,0.44)_44%,rgba(5,7,9,0.9)_100%)]" />
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-            <p className="eyebrow">{result ? "Previous Answer" : "2023 Cup Run"}</p>
+            <p className="eyebrow">{result ? "Previous Answer" : eyebrow}</p>
             <h2 className="mt-4 font-[family-name:var(--font-heading)] text-4xl font-bold tracking-tight text-white md:text-5xl">
               {label ?? "Type it from memory."}
             </h2>
@@ -69,7 +69,7 @@ function AnswerImage({ image, priority = false }: { image: AnswerImage; priority
       fill
       priority={priority}
       sizes="(min-width: 1024px) 37vw, 90vw"
-      className="object-cover"
+      className={image.objectFit === "contain" ? "object-contain" : "object-cover"}
       style={{ objectPosition: image.objectPosition ?? "center center" }}
     />
   );
@@ -101,7 +101,9 @@ function DiagonalAnswerImage({
           fill
           priority={priority}
           sizes="(min-width: 1024px) 28vw, 90vw"
-          className={`object-cover ${image.diagonalImageClassName ?? ""}`}
+          className={`${image.objectFit === "contain" ? "object-contain" : "object-cover"} ${
+            image.diagonalImageClassName ?? ""
+          }`}
           style={{ objectPosition: image.objectPosition ?? "center center" }}
         />
       </div>
@@ -109,15 +111,30 @@ function DiagonalAnswerImage({
   );
 }
 
-export function CupRunQuizExperience() {
+export function CupRunQuizExperience({
+  eyebrow,
+  title,
+  description,
+  questions
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  questions: TypedQuizQuestion[];
+}) {
   const [lastResult, setLastResult] = useState<AnswerResult | null>(null);
 
   return (
     <div className="min-h-screen">
       <SiteHeader />
       <main className="mx-auto grid w-full max-w-7xl gap-8 px-5 pb-20 pt-8 md:px-8 md:pt-12 lg:grid-cols-[0.74fr_1.26fr] lg:items-start">
-        <AnswerHeroGraphic result={lastResult} />
-        <TypedQuiz onLastResultChange={setLastResult} />
+        <AnswerHeroGraphic result={lastResult} eyebrow={eyebrow} />
+        <TypedQuiz
+          title={title}
+          description={description}
+          questions={questions}
+          onLastResultChange={setLastResult}
+        />
       </main>
       <SiteFooter />
     </div>
