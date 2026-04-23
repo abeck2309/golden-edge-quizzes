@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TypedQuiz, type AnswerResult } from "@/components/typed-quiz";
 import type { AnswerImage } from "@/lib/cup-run-quiz";
@@ -118,6 +119,7 @@ export function CupRunQuizExperience() {
         <AnswerHeroGraphic result={lastResult} />
         <TypedQuiz onLastResultChange={setLastResult} />
       </main>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 const heroImage =
@@ -57,6 +58,7 @@ export default function HomePage() {
           </article>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }
