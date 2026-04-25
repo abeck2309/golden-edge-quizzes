@@ -216,7 +216,15 @@ export const guessTheJerseyNumberQuizQuestions: TypedQuizQuestion[] = [
       "1 October Massacre",
       "October 1",
       "Route 91",
-      "Route 91 Victims"
+      "Route 91 Victims",
+      "Retired",
+      "Retired Number",
+      "Retired Jersey",
+      "Jersey Retired",
+      "Number Retired",
+      "Retired for the Vegas Shooting Victims",
+      "Retired for the Las Vegas Shooting Victims",
+      "Retired for Vegas Strong"
     ],
     displayAnswer: "Vegas shooting victims",
     answerPlaceholder: "Example: Vegas Strong",
