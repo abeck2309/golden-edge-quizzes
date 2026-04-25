@@ -50,8 +50,8 @@ function AnswerHeroGraphic({ result, eyebrow }: { result: AnswerResult | null; e
             </h2>
             {!result ? (
               <p className="mt-4 text-sm leading-7 text-frost/86 md:text-base">
-                Easy ones, deep cuts, and a few questions that reward the fans who watched every
-                shift.
+                Some are obvious, some are sneaky, and a few are for the fans who remember every
+                detail.
               </p>
             ) : null}
           </div>

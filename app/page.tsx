@@ -6,6 +6,19 @@ import { SiteHeader } from "@/components/site-header";
 const heroImage =
   "/nhlgok3-vegas-golden-knights-hockey-champions-banner-raising-panoramic-art-print-nhl-blakeway-panoramas__76249.jpg";
 
+const upcomingQuizzes = [
+  {
+    title: "Guess the Jersey Number",
+    description:
+      "A number-based VGK quiz built around current and past players, remembered digits, and some trickier pulls."
+  },
+  {
+    title: "Guess the Stat Leader",
+    description:
+      "A stat-focused challenge asking you to identify who led Vegas in different categories across seasons and playoff runs."
+  }
+];
+
 export default function HomePage() {
   return (
     <div className="min-h-screen">
@@ -32,6 +45,31 @@ export default function HomePage() {
         </section>
 
         <section className="mt-10 grid gap-6 md:mt-12">
+          <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="eyebrow">Trivia</p>
+                <span className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                  20 questions
+                </span>
+              </div>
+              <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
+                Which Team Did He Come From?
+              </h2>
+              <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
+                A typed-answer Golden Knights player-history challenge where the job is to identify
+                each player&apos;s previous team.
+              </p>
+            </div>
+
+            <Link
+              href="/which-team-did-he-come-from"
+              className="inline-flex w-fit rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink hover:bg-gold-bright"
+            >
+              Start Quiz
+            </Link>
+          </article>
+
           <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <div className="flex flex-wrap items-center gap-3">
@@ -81,6 +119,32 @@ export default function HomePage() {
               Start Quiz
             </Link>
           </article>
+
+          {upcomingQuizzes.map((quiz) => (
+            <article
+              key={quiz.title}
+              className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center"
+            >
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="eyebrow">Coming Soon</p>
+                  <span className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                    In Progress
+                  </span>
+                </div>
+                <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
+                  {quiz.title}
+                </h2>
+                <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
+                  {quiz.description}
+                </p>
+              </div>
+
+              <span className="inline-flex w-fit rounded-full border border-gold/30 px-6 py-3 text-sm font-semibold text-gold-bright">
+                Coming Soon
+              </span>
+            </article>
+          ))}
         </section>
       </main>
       <SiteFooter />
