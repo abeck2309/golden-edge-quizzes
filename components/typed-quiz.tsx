@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { TypedQuizQuestion } from "@/lib/cup-run-quiz";
 
 export type AnswerResult = {
@@ -8,6 +8,25 @@ export type AnswerResult = {
   userAnswer: string;
   isCorrect: boolean;
 };
+
+export type QuizResultLine = {
+  minimumPercentage: number;
+  text: string;
+};
+
+const defaultResultLines: QuizResultLine[] = [
+  { minimumPercentage: 1, text: "Banner-in-the-rafters stuff. You ran the table." },
+  { minimumPercentage: 0.8, text: "Deep playoff memory. You know the run cold." },
+  {
+    minimumPercentage: 0.6,
+    text: "Solid showing. You remember the big swings and a few deeper cuts."
+  },
+  { minimumPercentage: 0, text: "A few of those were nasty. Time for a rewatch." }
+];
+
+function getQuestionPromptText(question: TypedQuizQuestion) {
+  return question.promptText ?? (typeof question.prompt === "string" ? question.prompt : question.displayAnswer);
+}
 
 function normalizeAnswer(value: string) {
   return value
@@ -27,6 +46,19 @@ function answerMatches(question: TypedQuizQuestion, answer: string) {
   }
 
   if (question.answerGroups) {
+    if (question.acceptAnyAnswerGroup) {
+      return question.answerGroups.some((group) =>
+        group.some((accepted) => {
+          const normalizedAccepted = normalizeAnswer(accepted);
+          return (
+            normalizedAnswer === normalizedAccepted ||
+            normalizedAnswer.includes(normalizedAccepted) ||
+            normalizedAccepted.includes(normalizedAnswer)
+          );
+        })
+      );
+    }
+
     return question.answerGroups.every((group) =>
       group.some((accepted) => normalizedAnswer.includes(normalizeAnswer(accepted)))
     );
@@ -38,34 +70,25 @@ function answerMatches(question: TypedQuizQuestion, answer: string) {
   });
 }
 
-function getGradeLine(score: number, total: number) {
+function getGradeLine(score: number, total: number, resultLines: QuizResultLine[]) {
   const percentage = score / total;
-
-  if (percentage === 1) {
-    return "Banner-in-the-rafters stuff. You ran the table.";
-  }
-
-  if (percentage >= 0.8) {
-    return "Deep playoff memory. You know the run cold.";
-  }
-
-  if (percentage >= 0.6) {
-    return "Solid showing. You remember the big swings and a few deeper cuts.";
-  }
-
-  return "A few of those were nasty. Time for a rewatch.";
+  return resultLines.find((line) => percentage >= line.minimumPercentage)?.text ?? defaultResultLines.at(-1)!.text;
 }
 
 export function TypedQuiz({
   title,
   description,
   questions,
-  onLastResultChange
+  resultLines = defaultResultLines,
+  onLastResultChange,
+  onCurrentQuestionChange
 }: {
   title: string;
-  description: string;
+  description: React.ReactNode;
   questions: TypedQuizQuestion[];
+  resultLines?: QuizResultLine[];
   onLastResultChange?: (result: AnswerResult | null) => void;
+  onCurrentQuestionChange?: (question: TypedQuizQuestion | null) => void;
 }) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState("");
@@ -76,6 +99,10 @@ export function TypedQuiz({
   const isComplete = questionIndex >= questions.length;
   const score = useMemo(() => results.filter((result) => result.isCorrect).length, [results]);
   const progress = Math.round((results.length / questions.length) * 100);
+
+  useEffect(() => {
+    onCurrentQuestionChange?.(isComplete ? null : currentQuestion);
+  }, [currentQuestion, isComplete, onCurrentQuestionChange]);
 
   function submitAnswer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,6 +130,7 @@ export function TypedQuiz({
     setResults([]);
     setLastResult(null);
     onLastResultChange?.(null);
+    onCurrentQuestionChange?.(questions[0] ?? null);
   }
 
   return (
@@ -113,7 +141,7 @@ export function TypedQuiz({
           <h1 className="mt-3 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
             {title}
           </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-mist md:text-base">{description}</p>
+          <div className="mt-4 max-w-3xl text-sm leading-7 text-mist md:text-base">{description}</div>
         </div>
         <div className="rounded-xl border border-gold/25 bg-gold/10 px-4 py-3 text-left md:text-right">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-bright">Score</p>
@@ -135,19 +163,19 @@ export function TypedQuiz({
               {score}/{questions.length}
             </h2>
             <p className="mt-4 text-sm leading-7 text-mist md:text-base">
-              {getGradeLine(score, questions.length)}
+              {getGradeLine(score, questions.length, resultLines)}
             </p>
           </div>
 
           <div className="grid gap-3">
             {results.map((result, index) => (
               <div
-                key={result.question.prompt}
+                key={getQuestionPromptText(result.question)}
                 className="rounded-xl border border-line bg-white/[0.03] p-4"
               >
                 <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                   <p className="text-sm font-semibold leading-6 text-white">
-                    {index + 1}. {result.question.prompt}
+                    {index + 1}. {getQuestionPromptText(result.question)}
                   </p>
                   <span
                     className={`w-fit rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${

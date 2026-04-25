@@ -8,9 +8,11 @@ export type AnswerImage = {
 };
 
 export type TypedQuizQuestion = {
-  prompt: string;
+  prompt: React.ReactNode;
+  promptText?: string;
   acceptedAnswers?: string[];
   answerGroups?: string[][];
+  acceptAnyAnswerGroup?: boolean;
   displayAnswer: string;
   answerPlaceholder?: string;
   answerImages?: AnswerImage[];

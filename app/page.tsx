@@ -8,11 +8,6 @@ const heroImage =
 
 const upcomingQuizzes = [
   {
-    title: "Guess the Jersey Number",
-    description:
-      "A number-based VGK quiz built around current and past players, remembered digits, and some trickier pulls."
-  },
-  {
     title: "Guess the Stat Leader",
     description:
       "A stat-focused challenge asking you to identify who led Vegas in different categories across seasons and playoff runs."
@@ -54,11 +49,36 @@ export default function HomePage() {
                 </span>
               </div>
               <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
+                Guess the Jersey Number
+              </h2>
+              <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
+                A VGK numbers quiz built around former sweater numbers, surprise names, and one
+                entry that means more than hockey.
+              </p>
+            </div>
+
+            <Link
+              href="/guess-the-jersey-number"
+              className="inline-flex w-fit rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink hover:bg-gold-bright"
+            >
+              Start Quiz
+            </Link>
+          </article>
+
+          <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="eyebrow">Trivia</p>
+                <span className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                  20 questions
+                </span>
+              </div>
+              <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
                 Which Team Did He Come From?
               </h2>
               <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
-                A typed-answer Golden Knights player-history challenge where the job is to identify
-                each player&apos;s previous team.
+                A Golden Knights player-history challenge where the job is to identify each
+                player&apos;s previous team.
               </p>
             </div>
 
@@ -82,8 +102,8 @@ export default function HomePage() {
                 Reliving the 2023 Stanley Cup Run
               </h2>
               <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
-                A typed-answer quiz covering playoff moments, series swings, Cup-clinching details,
-                and deeper cuts from the run. No multiple choice. Just you and the memories.
+                A quiz covering playoff moments, series swings, Cup-clinching details, and deeper
+                cuts from the run. No multiple choice. Just you and the memories.
               </p>
             </div>
 
@@ -107,8 +127,8 @@ export default function HomePage() {
                 The Inagural Season
               </h2>
               <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
-                A typed-answer quiz on the first goals, first home game, breakout players, playoff
-                run, and unforgettable details from Vegas&apos; first NHL season.
+                A quiz on the first goals, first home game, breakout players, playoff run, and
+                unforgettable details from Vegas&apos; first NHL season.
               </p>
             </div>
 
