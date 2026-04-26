@@ -38,6 +38,76 @@ function normalizeAnswer(value: string) {
     .trim();
 }
 
+function matchesAcceptedAnswer(normalizedAnswer: string, normalizedAccepted: string) {
+  if (!normalizedAnswer || !normalizedAccepted) {
+    return false;
+  }
+
+  if (normalizedAnswer === normalizedAccepted) {
+    return true;
+  }
+
+  const paddedAnswer = ` ${normalizedAnswer} `;
+  const paddedAccepted = ` ${normalizedAccepted} `;
+  return paddedAnswer.includes(paddedAccepted);
+}
+
+function getEditDistance(left: string, right: string) {
+  const rows = left.length + 1;
+  const cols = right.length + 1;
+  const matrix = Array.from({ length: rows }, () => Array<number>(cols).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    matrix[row][0] = row;
+  }
+
+  for (let col = 0; col < cols; col += 1) {
+    matrix[0][col] = col;
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let col = 1; col < cols; col += 1) {
+      const cost = left[row - 1] === right[col - 1] ? 0 : 1;
+      matrix[row][col] = Math.min(
+        matrix[row - 1][col] + 1,
+        matrix[row][col - 1] + 1,
+        matrix[row - 1][col - 1] + cost
+      );
+    }
+  }
+
+  return matrix[left.length][right.length];
+}
+
+function tokenMatchesWithTypoTolerance(answerToken: string, acceptedToken: string) {
+  if (answerToken === acceptedToken) {
+    return true;
+  }
+
+  if (acceptedToken.length < 5 || answerToken.length < 5) {
+    return false;
+  }
+
+  if (Math.abs(answerToken.length - acceptedToken.length) > 1) {
+    return false;
+  }
+
+  return getEditDistance(answerToken, acceptedToken) <= 1;
+}
+
+function fuzzyPhraseMatch(normalizedAnswer: string, normalizedAccepted: string) {
+  const answerTokens = normalizedAnswer.split(" ");
+  const acceptedTokens = normalizedAccepted.split(" ");
+
+  if (answerTokens.length !== acceptedTokens.length) {
+    return false;
+  }
+
+  return acceptedTokens.every((acceptedToken, index) =>
+    tokenMatchesWithTypoTolerance(answerTokens[index], acceptedToken)
+  );
+}
+
 function answerMatches(question: TypedQuizQuestion, answer: string) {
   const normalizedAnswer = normalizeAnswer(answer);
 
@@ -51,22 +121,30 @@ function answerMatches(question: TypedQuizQuestion, answer: string) {
         group.some((accepted) => {
           const normalizedAccepted = normalizeAnswer(accepted);
           return (
-            normalizedAnswer === normalizedAccepted ||
-            normalizedAnswer.includes(normalizedAccepted) ||
-            normalizedAccepted.includes(normalizedAnswer)
+            matchesAcceptedAnswer(normalizedAnswer, normalizedAccepted) ||
+            fuzzyPhraseMatch(normalizedAnswer, normalizedAccepted)
           );
         })
       );
     }
 
     return question.answerGroups.every((group) =>
-      group.some((accepted) => normalizedAnswer.includes(normalizeAnswer(accepted)))
+      group.some((accepted) => {
+        const normalizedAccepted = normalizeAnswer(accepted);
+        return (
+          matchesAcceptedAnswer(normalizedAnswer, normalizedAccepted) ||
+          fuzzyPhraseMatch(normalizedAnswer, normalizedAccepted)
+        );
+      })
     );
   }
 
   return (question.acceptedAnswers ?? []).some((accepted) => {
     const normalizedAccepted = normalizeAnswer(accepted);
-    return normalizedAnswer === normalizedAccepted || normalizedAnswer.includes(normalizedAccepted);
+    return (
+      matchesAcceptedAnswer(normalizedAnswer, normalizedAccepted) ||
+      fuzzyPhraseMatch(normalizedAnswer, normalizedAccepted)
+    );
   });
 }
 
@@ -76,6 +154,7 @@ function getGradeLine(score: number, total: number, resultLines: QuizResultLine[
 }
 
 export function TypedQuiz({
+  quizSlug,
   title,
   description,
   questions,
@@ -83,6 +162,7 @@ export function TypedQuiz({
   onLastResultChange,
   onCurrentQuestionChange
 }: {
+  quizSlug: string;
   title: string;
   description: React.ReactNode;
   questions: TypedQuizQuestion[];
@@ -94,6 +174,7 @@ export function TypedQuiz({
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [results, setResults] = useState<AnswerResult[]>([]);
   const [lastResult, setLastResult] = useState<AnswerResult | null>(null);
+  const [hasLoggedResult, setHasLoggedResult] = useState(false);
 
   const currentQuestion = questions[questionIndex];
   const isComplete = questionIndex >= questions.length;
@@ -103,6 +184,47 @@ export function TypedQuiz({
   useEffect(() => {
     onCurrentQuestionChange?.(isComplete ? null : currentQuestion);
   }, [currentQuestion, isComplete, onCurrentQuestionChange]);
+
+  useEffect(() => {
+    if (!isComplete || hasLoggedResult || results.length !== questions.length) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function logResult() {
+      try {
+        const response = await fetch("/api/quiz-results", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            quizSlug,
+            quizTitle: title,
+            score,
+            totalQuestions: questions.length
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Result logging failed: ${response.status}`);
+        }
+
+        if (!isCancelled) {
+          setHasLoggedResult(true);
+        }
+      } catch (error) {
+        console.error("Unable to log quiz result", error);
+      }
+    }
+
+    void logResult();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [hasLoggedResult, isComplete, questions.length, quizSlug, results.length, score, title]);
 
   function submitAnswer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -129,6 +251,7 @@ export function TypedQuiz({
     setCurrentAnswer("");
     setResults([]);
     setLastResult(null);
+    setHasLoggedResult(false);
     onLastResultChange?.(null);
     onCurrentQuestionChange?.(questions[0] ?? null);
   }

@@ -12,6 +12,7 @@ const resultLines: QuizResultLine[] = [
 export default function GuessTheJerseyNumberQuizPage() {
   return (
     <CupRunQuizExperience
+      quizSlug="guess-the-jersey-number"
       eyebrow="Numbers"
       title="Guess the Jersey Number"
       description={

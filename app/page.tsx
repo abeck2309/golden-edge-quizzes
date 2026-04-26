@@ -8,6 +8,11 @@ const heroImage =
 
 const upcomingQuizzes = [
   {
+    title: "Leadership Quiz",
+    description:
+      "A Vegas history challenge built around captaincy runs, coaching tenures, and the front-office timeline that shaped the franchise."
+  },
+  {
     title: "Guess the Stat Leader",
     description:
       "A stat-focused challenge asking you to identify who led Vegas in different categories across seasons and playoff runs."

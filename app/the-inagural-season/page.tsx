@@ -12,11 +12,13 @@ const resultLines: QuizResultLine[] = [
 export default function InaguralSeasonQuizPage() {
   return (
     <CupRunQuizExperience
+      quizSlug="the-inagural-season"
       eyebrow="2017-18 Season"
       title="The Inagural Season"
       description="No multiple choice. Type the answers and see how well you remember the season that changed hockey in Las Vegas."
       questions={inaguralSeasonQuizQuestions}
       resultLines={resultLines}
+      imageDisplayMode="previous"
     />
   );
 }

@@ -12,11 +12,13 @@ const resultLines: QuizResultLine[] = [
 export default function WhichTeamDidHeComeFromQuizPage() {
   return (
     <CupRunQuizExperience
+      quizSlug="which-team-did-he-come-from"
       eyebrow="Player Origins"
       title="Which Team Did He Come From?"
       description="Type the last team for each player before they got to Vegas. No choices, just roster memory."
       questions={whichTeamDidHeComeFromQuizQuestions}
       resultLines={resultLines}
+      imageDisplayMode="previous"
     />
   );
 }
