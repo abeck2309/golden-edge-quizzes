@@ -15,13 +15,33 @@ export const dynamic = "force-dynamic";
 
 type SearchParamValue = string | string[] | undefined;
 
+const trackedLiveQuizzes = [
+  {
+    slug: "guess-the-jersey-number",
+    title: "Guess the Jersey Number"
+  },
+  {
+    slug: "which-team-did-he-come-from",
+    title: "Which Team Did He Come From?"
+  },
+  {
+    slug: "reliving-the-2023-stanley-cup-run",
+    title: "Reliving the 2023 Stanley Cup Run"
+  },
+  {
+    slug: "the-inagural-season",
+    title: "The Inagural Season"
+  }
+] as const;
+
 function formatDate(value: string) {
   return new Date(value).toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
-    minute: "2-digit"
+    minute: "2-digit",
+    timeZone: "America/Los_Angeles"
   });
 }
 
@@ -64,13 +84,31 @@ function buildStats(results: StoredQuizResult[]) {
     return accumulator;
   }, {});
 
-  return Object.entries(byQuiz)
-    .map(([slug, stat]) => ({
-      slug,
-      ...stat,
-      averageScore: stat.totalScore / stat.plays,
-      averageTotalQuestions: stat.totalQuestions / stat.plays
-    }))
+  return trackedLiveQuizzes
+    .map((quiz) => {
+      const stat = byQuiz[quiz.slug];
+
+      if (!stat) {
+        return {
+          slug: quiz.slug,
+          title: quiz.title,
+          plays: 0,
+          totalScore: 0,
+          totalQuestions: 0,
+          bestScore: 0,
+          latestAt: "",
+          averageScore: 0,
+          averageTotalQuestions: 0
+        };
+      }
+
+      return {
+        slug: quiz.slug,
+        ...stat,
+        averageScore: stat.totalScore / stat.plays,
+        averageTotalQuestions: stat.totalQuestions / stat.plays
+      };
+    })
     .sort((left, right) => right.plays - left.plays);
 }
 
@@ -203,7 +241,9 @@ export default async function AdminResultsPage({
                   </p>
                   <p className="mt-3 text-3xl font-bold text-white">
                     {activeQuiz && filteredStats
-                      ? `${filteredStats.bestScore}/${Math.round(filteredStats.averageTotalQuestions)}`
+                      ? filteredStats.plays > 0
+                        ? `${filteredStats.bestScore}/${Math.round(filteredStats.averageTotalQuestions)}`
+                        : "0/0"
                       : bestOverall
                         ? `${bestOverall.score}/${bestOverall.total_questions}`
                         : "0/0"}
@@ -215,7 +255,9 @@ export default async function AdminResultsPage({
                   </p>
                   <p className="mt-3 text-lg font-bold text-white">
                     {activeQuiz && filteredStats
-                      ? formatDate(filteredStats.latestAt)
+                      ? filteredStats.latestAt
+                        ? formatDate(filteredStats.latestAt)
+                        : "No plays yet"
                       : `${quizStats.length} active`}
                   </p>
                 </div>
@@ -238,11 +280,11 @@ export default async function AdminResultsPage({
                       >
                         <span className="font-semibold text-white">{quiz.title}</span>
                         <span>{quiz.plays}</span>
-                        <span>{formatPercentage(quiz.averageScore, quiz.averageTotalQuestions)}</span>
+                        <span>{quiz.plays > 0 ? formatPercentage(quiz.averageScore, quiz.averageTotalQuestions) : "0%"}</span>
                         <span>
-                          {quiz.bestScore}/{Math.round(quiz.averageTotalQuestions)}
+                          {quiz.plays > 0 ? `${quiz.bestScore}/${Math.round(quiz.averageTotalQuestions)}` : "0/0"}
                         </span>
-                        <span>{formatDate(quiz.latestAt)}</span>
+                        <span>{quiz.latestAt ? formatDate(quiz.latestAt) : "No plays yet"}</span>
                       </div>
                     ))}
                   </div>
