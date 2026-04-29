@@ -116,7 +116,7 @@ export const guessTheStatLeaderQuizQuestions: TypedQuizQuestion[] = [
     promptText: "Who, and in what year, had the most shutouts in a single season?",
     answerGroups: [
       ["Marc Andre Fleury", "Marc-Andre Fleury", "Fleury"],
-      ["2018 19", "2018-19", "2018 2019", "2018-2019"]
+      ["2018 19", "2018-19", "2018 2019", "2018-2019", "2018", "2019"]
     ],
     displayAnswer: "Marc-Andre Fleury, 2018-19",
     answerPlaceholder: "Example: Marc-Andre Fleury, 2018-19",
