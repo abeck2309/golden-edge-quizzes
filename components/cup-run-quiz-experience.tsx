@@ -28,7 +28,7 @@ function AnswerHeroGraphic({
           <div className="flex h-full min-h-[360px] flex-col justify-end bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-6 md:p-8 lg:min-h-[640px]">
             <p className="eyebrow">Image Coming Soon</p>
             <h2 className="mt-4 font-[family-name:var(--font-heading)] text-4xl font-bold tracking-tight text-white md:text-5xl">
-              Leadership clue loaded.
+              Clue loaded.
             </h2>
           </div>
         ) : (

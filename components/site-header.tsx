@@ -5,7 +5,7 @@ export function SiteHeader() {
     <header className="border-b border-white/5 bg-[#080a0d]/86 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-8">
         <a href="/" className="flex items-center gap-3 rounded-md" aria-label="Golden Edge Quizzes home">
-          <Image src="/vgk-logo.png" alt="" width={36} height={36} className="h-9 w-auto" priority />
+          <Image src="/VGK.png" alt="" width={36} height={36} className="h-9 w-auto" priority />
           <div className="leading-tight">
             <p className="font-[family-name:var(--font-heading)] text-lg font-bold uppercase tracking-[0.08em] text-white">
               Golden Edge Quizzes

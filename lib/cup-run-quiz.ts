@@ -13,6 +13,7 @@ export type TypedQuizQuestion = {
   acceptedAnswers?: string[];
   answerGroups?: string[][];
   acceptAnyAnswerGroup?: boolean;
+  requireAnswerGroupOrder?: boolean;
   displayAnswer: string;
   answerPlaceholder?: string;
   answerImages?: AnswerImage[];

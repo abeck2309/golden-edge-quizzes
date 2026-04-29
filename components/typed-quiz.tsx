@@ -108,6 +108,37 @@ function fuzzyPhraseMatch(normalizedAnswer: string, normalizedAccepted: string) 
   );
 }
 
+function getPhraseIndex(normalizedAnswer: string, normalizedAccepted: string, startIndex = 0) {
+  return normalizedAnswer.indexOf(normalizedAccepted, startIndex);
+}
+
+function answerGroupMatchesInOrder(normalizedAnswer: string, answerGroups: string[][]) {
+  let searchStart = 0;
+
+  for (const group of answerGroups) {
+    let matchedIndex = -1;
+    let matchedLength = 0;
+
+    for (const accepted of group) {
+      const normalizedAccepted = normalizeAnswer(accepted);
+      const phraseIndex = getPhraseIndex(normalizedAnswer, normalizedAccepted, searchStart);
+
+      if (phraseIndex >= 0 && (matchedIndex === -1 || phraseIndex < matchedIndex)) {
+        matchedIndex = phraseIndex;
+        matchedLength = normalizedAccepted.length;
+      }
+    }
+
+    if (matchedIndex === -1) {
+      return false;
+    }
+
+    searchStart = matchedIndex + matchedLength;
+  }
+
+  return true;
+}
+
 function answerMatches(question: TypedQuizQuestion, answer: string) {
   const normalizedAnswer = normalizeAnswer(answer);
 
@@ -116,6 +147,10 @@ function answerMatches(question: TypedQuizQuestion, answer: string) {
   }
 
   if (question.answerGroups) {
+    if (question.requireAnswerGroupOrder) {
+      return answerGroupMatchesInOrder(normalizedAnswer, question.answerGroups);
+    }
+
     if (question.acceptAnyAnswerGroup) {
       return question.answerGroups.some((group) =>
         group.some((accepted) => {
