@@ -17,6 +17,10 @@ type SearchParamValue = string | string[] | undefined;
 
 const trackedLiveQuizzes = [
   {
+    slug: "played-for-both-teams",
+    title: "Played for Both Teams"
+  },
+  {
     slug: "guess-the-stat-leader",
     title: "Guess the Stat Leader"
   },

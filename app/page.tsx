@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 const heroImage =
   "/nhlgok3-vegas-golden-knights-hockey-champions-banner-raising-panoramic-art-print-nhl-blakeway-panoramas__76249.jpg";
+const bestStreakStorageKey = "played-for-both-teams-best-streak";
 
 const upcomingQuizzes = [
   {
@@ -22,6 +26,14 @@ const upcomingQuizzes = [
 ];
 
 export default function HomePage() {
+  const [bestStreak, setBestStreak] = useState<number | null>(null);
+
+  useEffect(() => {
+    const savedBestStreak = window.localStorage.getItem(bestStreakStorageKey);
+    const parsedBestStreak = savedBestStreak ? Number.parseInt(savedBestStreak, 10) : 0;
+    setBestStreak(Number.isNaN(parsedBestStreak) ? 0 : parsedBestStreak);
+  }, []);
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -47,6 +59,31 @@ export default function HomePage() {
         </section>
 
         <section className="mt-10 grid gap-6 md:mt-12">
+          <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="eyebrow">Jackpot</p>
+                <span className="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                  {bestStreak === null ? "Loading streak" : `Best streak: ${bestStreak}`}
+                </span>
+              </div>
+              <h2 className="mt-4 font-[family-name:var(--font-heading)] text-3xl font-bold tracking-tight text-white md:text-5xl">
+                Played for Both Teams
+              </h2>
+              <p className="mt-4 max-w-3xl text-sm leading-8 text-mist md:text-base">
+                A league-wide crossover challenge where two teams spin up and you keep naming shared
+                players until the streak breaks.
+              </p>
+            </div>
+
+            <Link
+              href="/played-for-both-teams"
+              className="inline-flex w-fit rounded-full bg-gold px-6 py-3 text-sm font-semibold text-ink hover:bg-gold-bright"
+            >
+              Start Quiz
+            </Link>
+          </article>
+
           <article className="panel grid gap-6 p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <div className="flex flex-wrap items-center gap-3">

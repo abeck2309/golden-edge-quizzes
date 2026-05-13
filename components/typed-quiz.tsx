@@ -243,14 +243,19 @@ export function TypedQuiz({
         });
 
         if (!response.ok) {
-          throw new Error(`Result logging failed: ${response.status}`);
+          if (!isCancelled) {
+            setHasLoggedResult(true);
+          }
+          return;
         }
 
         if (!isCancelled) {
           setHasLoggedResult(true);
         }
       } catch (error) {
-        console.error("Unable to log quiz result", error);
+        if (!isCancelled) {
+          setHasLoggedResult(true);
+        }
       }
     }
 
